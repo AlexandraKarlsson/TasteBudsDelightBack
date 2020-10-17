@@ -40,6 +40,8 @@ const deleteDatabase = async function () {
 const createTables = async function () {
     await createRecipeTable()
     await createIngredientTable()
+    await createInstructionTable()
+    await createImageTable()
 
 }
 
@@ -78,8 +80,32 @@ const createIngredientTable = async function () {
     await createTable('ingredient', createTableQuery)
 }
 
+const createInstructionTable = async function () {
+    const createTableQuery = `CREATE TABLE IF NOT EXISTS instruction (
+        id int primary key auto_increment,
+        ordernumber int NOT NULL,
+        description varchar(1000) NOT NULL,
+        recipeid int NOT NULL,
+        CONSTRAINT fk_instruction_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id)
+    )`
+    await createTable('instruction', createTableQuery)
+}
+
+const createImageTable = async function () {
+    const createTableQuery = `CREATE TABLE IF NOT EXISTS image (
+        id int primary key auto_increment,
+        ordernumber int NOT NULL,
+        name varchar(100) NOT NULL,
+        recipeid int NOT NULL,
+        CONSTRAINT fk_image_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id)
+    )`
+    await createTable('image', createTableQuery)
+}
+
 
 const deleteTables = async function () {
+    await deleteTable('image')
+    await deleteTable('instruction')
     await deleteTable('ingredient')
     await deleteTable('recipe')
 }
