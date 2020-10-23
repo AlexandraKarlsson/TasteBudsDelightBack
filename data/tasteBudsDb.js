@@ -36,19 +36,29 @@ const createRecipe = async (recipe) => {
  
     // Add row/rows to image table
     const imagesInfo = []
+    const imageFileNames = []
     recipe.images.forEach((image,index) => {
-        imagesInfo.push([index,image.name,recipeId])
+        const imageName = `${recipeId}_recipeimage_${index}.${image.extention}`
+        imagesInfo.push([index,imageName,recipeId])
+        imageFileNames.push(imageName)
     })
     console.log(imagesInfo)
 
     query = 'INSERT INTO image (ordernumber,name,recipeid) VALUES ?'
     result = await tasteBudsPoolPromise.query(query, [imagesInfo])
     console.log(result)
+
+    return {
+        recipeId : recipeId,
+        imageFileNames : imageFileNames
+    }
 }
 
 const getRecipes = async () => {
     console.log('Inside getRecipes')
     console.log('Not implemented yet')
+
+    const query = 'SELECT * FROM recipe, image'
 }
 
 module.exports = {createRecipe, getRecipes}
