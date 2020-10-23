@@ -1,23 +1,5 @@
 const mysql = require('mysql2')
-
-const databaseConnectionInfo = {
-    host: 'mysql',
-    user: 'root',
-    password: 'example'
-}
-const databasePool = mysql.createPool(databaseConnectionInfo)
-const databasePoolPromise = databasePool.promise()
-
-// TODO: Export for use in toRdbm module
-const homeFinderConnectionInfo = {
-    host: 'mysql',
-    user: 'root',
-    password: 'example',
-    database: 'tastebuds'
-}
-const tastBudsPool = mysql.createPool(homeFinderConnectionInfo)
-const tastBudsPoolPromise = tastBudsPool.promise()
-
+const {databasePoolPromise, tasteBudsPoolPromise} = require('./connectionDb')
 
 const createDatabase = async function () {
     try {
@@ -47,7 +29,7 @@ const createTables = async function () {
 
 const createTable = async function (tableName, createTableQuery) {
     try {
-        await tastBudsPoolPromise.query(createTableQuery)
+        await tasteBudsPoolPromise.query(createTableQuery)
         console.log(`Table ${tableName} created!`)
     } catch (error) {
         console.log(`Table ${tableName} creation failed!`)
@@ -60,10 +42,11 @@ const createRecipeTable = async function () {
         title varchar(100) NOT NULL,
         description varchar(1000) NOT NULL,
         time int NOT NULL,
+        portions int NOT NULL,
         isvegan boolean NOT NULL,
         isvegetarian boolean NOT NULL,
-        isglutenFree boolean NOT NULL,
-        islactoseFree boolean NOT NULL
+        isglutenfree boolean NOT NULL,
+        islactosefree boolean NOT NULL
     )`
     await createTable('recipe', createTableQuery)
 }
@@ -113,7 +96,7 @@ const deleteTables = async function () {
 const deleteTable = async function (tableName) {
     try {
         const deleteQuery = `DROP TABLE ${tableName}`
-        await tastBudsPoolPromise.query(deleteQuery)
+        await tasteBudsPoolPromise.query(deleteQuery)
         console.log(`Table ${tableName} deleted`)
     } catch (error) {
         console.log(`Table ${tableName} deletion failed`)
@@ -121,8 +104,6 @@ const deleteTable = async function (tableName) {
 }
 
 module.exports = {
-    databasePoolPromise,
-    tastBudsPoolPromise,
     createDatabase,
     deleteDatabase,
     createTables,

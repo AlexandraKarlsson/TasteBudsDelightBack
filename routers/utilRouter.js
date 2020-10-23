@@ -1,6 +1,6 @@
 const express = require('express')
 const { response, request } = require('express')
-const { createDatabase, deleteDatabase, createTables, deleteTables } = require('../data/database')
+const { createDatabase, deleteDatabase, createTables, deleteTables } = require('../data/utilDb')
 
 const utilRouter = express.Router()
 

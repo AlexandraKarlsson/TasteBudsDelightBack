@@ -26,6 +26,7 @@ services:
       - mysql
     # command: ["./wait-for-it.sh","mysql:3306","--","npm","start"]
     command: ["npm", "start"]
+    
 
   
   imagestorage:
@@ -35,6 +36,10 @@ services:
     working_dir: /home/node/app
     environment:
       - NODE_ENV=docker-dev
+      - SQL_HOST=mysql
+      - SQL_USER=root
+      - SQL_PASSWORD=example
+      - SQL_DATABASE=tastbuds
     volumes:
       - ../imagestorage/:/home/node/app
     ports:
