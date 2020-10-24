@@ -8,17 +8,17 @@ tasteBudsRouter.post('/', async (request,response) => {
     const body = request.body
     console.log(body)
     try {
-        const result = await createRecipe(body)
-        response.send({result})
+        const insertInfo = await createRecipe(body)
+        response.send({insertInfo})
     } catch(error) {
         response.status(400).send(error)
     }
 })
 
-tasteBudsRouter.get('/',(request,response) => {
+tasteBudsRouter.get('/', async (request,response) => {
     try {
-        getRecipes()
-        response.send('fetch list of recipes')
+        const recipes = await getRecipes()
+        response.send({recipes})
     } catch(error) {
         response.status(400).send(error)
     }

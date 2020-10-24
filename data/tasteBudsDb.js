@@ -58,7 +58,10 @@ const getRecipes = async () => {
     console.log('Inside getRecipes')
     console.log('Not implemented yet')
 
-    const query = 'SELECT * FROM recipe, image'
+    const query = 'SELECT * FROM recipe, image WHERE recipe.id=image.recipeid AND image.ordernumber=0'
+    const result =  await tasteBudsPoolPromise.query(query)
+    console.log(result[0])
+    return result[0]
 }
 
 module.exports = {createRecipe, getRecipes}
