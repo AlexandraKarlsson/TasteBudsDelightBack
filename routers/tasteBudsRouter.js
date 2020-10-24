@@ -4,7 +4,7 @@ const {createRecipe, getRecipes} = require('../data/tasteBudsDb')
 
 const tasteBudsRouter = express.Router()
 
-tasteBudsRouter.post('/', async (request,response) => {
+tasteBudsRouter.post('/recipe', async (request,response) => {
     const body = request.body
     console.log(body)
     try {
@@ -15,7 +15,7 @@ tasteBudsRouter.post('/', async (request,response) => {
     }
 })
 
-tasteBudsRouter.get('/', async (request,response) => {
+tasteBudsRouter.get('/recipe', async (request,response) => {
     try {
         const recipes = await getRecipes()
         response.send({recipes})
