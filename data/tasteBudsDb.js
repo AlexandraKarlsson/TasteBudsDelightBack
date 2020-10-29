@@ -2,8 +2,7 @@ const {tasteBudsPoolPromise} = require('./connectionDb')
 
 
 const createRecipe = async (recipe) => {
-    console.log('Inside createRecipe')
-    console.log('Not implemented yet')
+    console.log('Inside createRecipe...')
 
     // Add row to recipe table
     const recipeInfo = recipe.overview
