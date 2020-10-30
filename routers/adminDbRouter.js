@@ -2,14 +2,14 @@ const express = require('express')
 const { response, request } = require('express')
 const { createDatabase, deleteDatabase, createTables, deleteTables } = require('../data/utilDb')
 
-const utilRouter = express.Router()
+const adminDbRouter = express.Router()
 
-utilRouter.get('/', (request, response) => {
+adminDbRouter.get('/', (request, response) => {
     console.log('Running /util')
     response.send('Util router home ...')
 })
 
-utilRouter.get('/createdb', (request, response) => {
+adminDbRouter.get('/createdb', (request, response) => {
     console.log('Running /createdb')
     try {
         createDatabase()
@@ -19,7 +19,7 @@ utilRouter.get('/createdb', (request, response) => {
     }
 })
 
-utilRouter.get('/createtables', (request, response) => {
+adminDbRouter.get('/createtables', (request, response) => {
     console.log('Running /createtables')
     try {
         createTables()
@@ -29,7 +29,7 @@ utilRouter.get('/createtables', (request, response) => {
     }
 })
 
-utilRouter.get('/deletedb', (request, response) => {
+adminDbRouter.get('/deletedb', (request, response) => {
     console.log('Running /deletedb')
     try {
         deleteDatabase()
@@ -39,7 +39,7 @@ utilRouter.get('/deletedb', (request, response) => {
     }
 })
 
-utilRouter.get('/deletetables', (request, response) => {
+adminDbRouter.get('/deletetables', (request, response) => {
     console.log('Running /deletetables')
     try {
         deleteTables()
@@ -58,7 +58,7 @@ function runDbOperationWithTryCatch(response,message,dbOperationFn) {
     }
 }
 
-utilRouter.get('/setupdb', (request, response) => {
+adminDbRouter.get('/setupdb', (request, response) => {
     console.log('Running /setupdb')
     runDbOperationWithTryCatch(response,'Database setup successfully!', async () => {
         await createDatabase()
@@ -66,7 +66,7 @@ utilRouter.get('/setupdb', (request, response) => {
     })
 })
 
-utilRouter.get('/teardowndb', (request, response) => {
+adminDbRouter.get('/teardowndb', (request, response) => {
     console.log('Running /teardowndb')
     runDbOperationWithTryCatch(response,'Database teardown successfully!', async () => {
         await deleteTables()
@@ -74,4 +74,4 @@ utilRouter.get('/teardowndb', (request, response) => {
     })
 })
 
-module.exports = { utilRouter }
+module.exports = { adminDbRouter }

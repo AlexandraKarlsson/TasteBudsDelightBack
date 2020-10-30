@@ -9,14 +9,14 @@ app.use(bodyParser.json())
 const PORT = 8000
 
 const { tasteBudsRouter } = require('./routers/tasteBudsRouter')
-const { utilRouter } = require('./routers/utilRouter')
+const { adminDbRouter } = require('./routers/adminDbRouter')
 
 
 app.get('/', (request, response) => {
     response.send('Hello tasty buddies');
 })
 
-app.use('/util',utilRouter)
+app.use('/admindb',adminDbRouter)
 app.use('/tastebuds',tasteBudsRouter)
 
 app.listen(PORT, () => {
