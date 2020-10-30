@@ -54,6 +54,7 @@ const createRecipeTable = async function () {
 const createIngredientTable = async function () {
     const createTableQuery = `CREATE TABLE IF NOT EXISTS ingredient (
         id int primary key auto_increment,
+        ordernumber int NOT NULL,
         name varchar(50) NOT NULL,
         unit varchar(10) NOT NULL,
         amount int NOT NULL,
