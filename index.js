@@ -1,3 +1,6 @@
+const { getIpAddress } = require('./utils')
+const ipAddress = getIpAddress()
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -13,12 +16,13 @@ const { adminDbRouter } = require('./routers/adminDbRouter')
 
 
 app.get('/', (request, response) => {
-    response.send('Hello tasty buddies');
+    console.log(`TasteBudsBack: REST API on IP address ${ipAddress} - GET / ...`)
+    response.send(`TasteBudsBack: REST API on IP address ${ipAddress} - GET /`)
 })
 
-app.use('/admindb',adminDbRouter)
-app.use('/tastebuds',tasteBudsRouter)
+app.use('/admindb', adminDbRouter)
+app.use('/tastebuds', tasteBudsRouter)
 
 app.listen(PORT, () => {
-    console.log(`Server listning on port ${PORT}`)
+    console.log(`TasteBuds backend, running on address ${ipAddress}, listning on port ${PORT}`)
 })

@@ -4,6 +4,11 @@ const {createRecipe, getRecipes, getRecipe} = require('../data/tasteBudsDb')
 
 const tasteBudsRouter = express.Router()
 
+tasteBudsRouter.get('/', (request, response) => {
+    console.log('Running /tastebuds')
+    response.send('tasteBudsRouter: home ...')
+})
+
 tasteBudsRouter.post('/recipe', async (request,response) => {
     console.log('Inside POST /recipe...')
     const body = request.body

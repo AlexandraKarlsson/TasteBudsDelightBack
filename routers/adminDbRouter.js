@@ -5,8 +5,8 @@ const { createDatabase, deleteDatabase, createTables, deleteTables } = require('
 const adminDbRouter = express.Router()
 
 adminDbRouter.get('/', (request, response) => {
-    console.log('Running /util')
-    response.send('Util router home ...')
+    console.log('Running /admindb')
+    response.send('adminDbRouter: home ...')
 })
 
 adminDbRouter.get('/createdb', (request, response) => {
