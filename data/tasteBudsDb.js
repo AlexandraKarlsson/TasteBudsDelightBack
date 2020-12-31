@@ -70,7 +70,7 @@ const selectAllInTable = async (tableName, columnName, columnValue,sortColumnNam
         query = `SELECT * FROM ${tableName} WHERE ${columnName}=${columnValue} ORDER BY ${sortColumnName}`
     }
     const result = await tasteBudsPoolPromise.query(query)
-    console.log(result)
+    // console.log(result[0])
     return result[0];
 }
 
@@ -78,12 +78,12 @@ const getRecipe = async (id) => {
     console.log('Inside getRecipe')
 
     const overviewResult = await selectAllInTable('recipe','id',id,null)
-    console.log(overviewResult)
+    // console.log(overviewResult[0])
     const overview = overviewResult[0]
     console.log(overview)
     
     const ingredientResult = await selectAllInTable('ingredient','recipeid',id,'ordernumber')
-    console.log(ingredientResult)
+    // console.log(ingredientResult[0])
     let ingredients = []
     ingredientResult.forEach((ingredient) => {
         console.log(ingredient)
@@ -91,7 +91,7 @@ const getRecipe = async (id) => {
     })
 
     const instructionResult = await selectAllInTable('instruction','recipeid',id,'ordernumber')
-    console.log(instructionResult)
+    // console.log(instructionResult[0])
     let instructions = []
     instructionResult.forEach((instruction) => {
         console.log(instruction)
@@ -99,7 +99,7 @@ const getRecipe = async (id) => {
     })
 
     const imageResult = await selectAllInTable('image','recipeid',id,'ordernumber')
-    console.log(imageResult)
+    // console.log(imageResult[0])
     let images = []
     imageResult.forEach((image) => {
         console.log(image)

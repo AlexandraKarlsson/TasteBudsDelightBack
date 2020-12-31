@@ -1,3 +1,9 @@
+# npm start setup environment on windows
+# set SQL_HOST=mysql
+# set SQL_USER=root
+# set SQL_PASSWORD=example
+# set SQL_DATABASE=tastebuds
+
 version: '3.1'
 services:
   mysql:
@@ -17,7 +23,11 @@ services:
     user: "node"
     working_dir: /home/node/app
     environment:
-      - NODE_ENV=docker-dev
+    #   - NODE_ENV=docker-dev
+      - SQL_HOST=mysql
+      - SQL_USER=root
+      - SQL_PASSWORD=example
+      - SQL_DATABASE=tastebuds
     volumes:
       - ./:/home/node/app
     ports:
@@ -35,7 +45,7 @@ services:
     user: "node"
     working_dir: /home/node/app
     environment:
-      - NODE_ENV=docker-dev
+    #  - NODE_ENV=docker-dev
       - SQL_HOST=mysql
       - SQL_USER=root
       - SQL_PASSWORD=example
