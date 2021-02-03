@@ -24,6 +24,8 @@ const createTables = async function () {
     await createIngredientTable()
     await createInstructionTable()
     await createImageTable()
+    await createUserTable()
+    await createTokenTable()
 
 }
 
@@ -33,6 +35,26 @@ const createTable = async function (tableName, createTableQuery) {
         console.log(`Table ${tableName} created!`)
     } catch (error) {
         console.log(`Table ${tableName} creation failed!`)
+    }
+}
+
+const deleteTables = async function () {
+    await deleteTable('image')
+    await deleteTable('instruction')
+    await deleteTable('ingredient')
+    await deleteTable('recipe')
+    await deleteTable('token')
+    await deleteTable('user')
+    
+}
+
+const deleteTable = async function (tableName) {
+    try {
+        const deleteQuery = `DROP TABLE ${tableName}`
+        await tasteBudsPoolPromise.query(deleteQuery)
+        console.log(`Table ${tableName} deleted`)
+    } catch (error) {
+        console.log(`Table ${tableName} deletion failed`)
     }
 }
 
@@ -86,22 +108,27 @@ const createImageTable = async function () {
     await createTable('image', createTableQuery)
 }
 
+/*---------- USER ACCOUNT TABLES ---------*/
 
-const deleteTables = async function () {
-    await deleteTable('image')
-    await deleteTable('instruction')
-    await deleteTable('ingredient')
-    await deleteTable('recipe')
+const createUserTable = async function() {
+    const createTableQuery = `CREATE TABLE IF NOT EXISTS user (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        username VARCHAR(32) NOT NULL UNIQUE,
+        password VARCHAR(256) NOT NULL,
+        email VARCHAR(64) NOT NULL UNIQUE
+    )`
+    await createTable('user', createTableQuery)
 }
 
-const deleteTable = async function (tableName) {
-    try {
-        const deleteQuery = `DROP TABLE ${tableName}`
-        await tasteBudsPoolPromise.query(deleteQuery)
-        console.log(`Table ${tableName} deleted`)
-    } catch (error) {
-        console.log(`Table ${tableName} deletion failed`)
-    }
+const createTokenTable = async function() {
+    const createTableQuery = `CREATE TABLE IF NOT EXISTS token (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        access VARCHAR(32) NOT NULL,
+        token VARCHAR(256) NOT NULL,
+        userid INT NOT NULL,
+        CONSTRAINT fk_token_user FOREIGN KEY (userId) REFERENCES user(id)
+    )`
+    await createTable('token', createTableQuery)
 }
 
 module.exports = {
