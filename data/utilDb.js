@@ -1,4 +1,3 @@
-const mysql = require('mysql2')
 const {databasePoolPromise, tasteBudsPoolPromise} = require('./connectionDb')
 
 const createDatabase = async function () {
