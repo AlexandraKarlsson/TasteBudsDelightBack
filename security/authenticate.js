@@ -9,9 +9,9 @@ const authenticate = async (request,response,next) => {
     try {
         verifyAuthToken(token);
         let rows = await tasteBudsPoolPromise.query(`SELECT user.id as id,username,email FROM user,token WHERE token='${token}' AND token.userid=user.id`);
-        console.log('rows=',rows);
-        if(rows.length===0) {
-            throw `User not found, token '${token}'!`; 
+        console.log('rows=',rows[0]);
+        if(rows[0].length === 0) {
+            throw `User not authenticated'!`; 
         }
 
         const id        = rows[0][0].id;
@@ -24,7 +24,7 @@ const authenticate = async (request,response,next) => {
         next();
     } catch (error) {
         console.log(error);
-        response.status(401).send();
+        response.status(401).send(error);
     }
 };
 
