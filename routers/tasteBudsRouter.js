@@ -5,7 +5,7 @@ const { createRecipe, getRecipes, getRecipe } = require('../data/tasteBudsDb')
 
 // USER IMPORTS
 const { tasteBudsPoolPromise } = require('../data/connectionDb')
-const bcrypt  = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 const { authenticate } = require('../security/authenticate')
 
@@ -63,44 +63,43 @@ tasteBudsRouter.post('/user', async (request, response) => {
   const password = request.body.password; // Must be at least 4 characters
   const email = request.body.email;
   const access = "auth";
-
-  if (username.length < 2) {
-    const error = `Username '${username}' is shorter than 2 characters!`;
-    console.log(error);
-    response.status(400).send({ error });
-  }
-  if (password.length < 4) {
-    const error = `Password '${password}' is shorter than 4 characters!`;
-    console.log(error);
-    response.status(400).send({ error });
-  }
-  if (!validator.isEmail(email)) {
-    const error = `Email ${email} is not a valid email!`;
-    console.log(error);
-    response.status(400).send({ error });
-  };
-
   console.log('username', username);
   console.log('password', password);
   console.log('email', email);
   console.log('access', access);
 
-  try {
-    const passwordHash = await generateHash(password);
-    const userResult = await tasteBudsPoolPromise.query(`INSERT INTO user (username,password,email) VALUES ('${username}','${passwordHash}','${email}')`);
-    if (userResult[0].affectedRows !== 1) {
-      console.log('userResult= ', userResult);
-      throw "Could not insert user!";
-    }
-    const id = userResult[0].insertId;
-    console.log('id= ', id);
-
-    const user = { id, username, email };
-    response.status(201).send({ user });
-
-  } catch (error) {
+  if (username.length <= 2) {
+    const error = `Username '${username}' is shorter than 3 characters!`;
     console.log(error);
-    response.status(400).send();
+    response.status(400).send({ error });
+  }
+  else if (password.length <= 2) {
+    const error = `Password '${password}' is shorter than 3 characters!`;
+    console.log(error);
+    response.status(400).send({ error });
+  }
+  else if (!validator.isEmail(email)) {
+    const error = `Email ${email} is not a valid email!`;
+    console.log(error);
+    response.status(400).send({ error });
+  } else {
+    try {
+      const passwordHash = await generateHash(password);
+      const userResult = await tasteBudsPoolPromise.query(`INSERT INTO user (username,password,email) VALUES ('${username}','${passwordHash}','${email}')`);
+      if (userResult[0].affectedRows !== 1) {
+        console.log('userResult= ', userResult);
+        throw "Could not insert user!";
+      }
+      const id = userResult[0].insertId;
+      console.log('id= ', id);
+
+      const user = { id, username, email };
+      response.status(201).send({ user });
+
+    } catch (error) {
+      console.log(error);
+      response.status(400).send();
+    }
   }
 });
 
@@ -147,7 +146,7 @@ tasteBudsRouter.delete('/user', authenticate, async (request, response) => {
     console.log(tokenResult[0].affectedRows);
     if (tokenResult[0].affectedRows === 0) {
       throw "Unable to remove token!";
-    } 
+    }
 
     const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${id}`);
     console.log(userResult[0].affectedRows);
@@ -167,13 +166,13 @@ tasteBudsRouter.delete('/user', authenticate, async (request, response) => {
 tasteBudsRouter.get('/user/me', async (request, response) => {
   console.log('\nRunning GET /user/me');
   const token = request.header('x-auth');
-  console.log('token=',token);
+  console.log('token=', token);
 
   try {
     verifyAuthToken(token);
 
     let rows = await tasteBudsPoolPromise.query(`SELECT user.id as id,username,email from user,token WHERE token.token='${token}' AND token.userid=user.id`);
-    console.log('rows=',rows[0]);
+    console.log('rows=', rows[0]);
     if (rows.length === 0) {
       throw `User not found, token '${token}'!`;
     }
