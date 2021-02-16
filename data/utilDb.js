@@ -1,4 +1,4 @@
-const {databasePoolPromise, tasteBudsPoolPromise} = require('./connectionDb')
+const { databasePoolPromise, tasteBudsPoolPromise } = require('./connectionDb')
 
 const createDatabase = async function () {
     try {
@@ -19,13 +19,12 @@ const deleteDatabase = async function () {
 }
 
 const createTables = async function () {
+    await createUserTable()
+    await createTokenTable()
     await createRecipeTable()
     await createIngredientTable()
     await createInstructionTable()
     await createImageTable()
-    await createUserTable()
-    await createTokenTable()
-
 }
 
 const createTable = async function (tableName, createTableQuery) {
@@ -38,13 +37,12 @@ const createTable = async function (tableName, createTableQuery) {
 }
 
 const deleteTables = async function () {
+    await deleteTable('token')
+    await deleteTable('user')
     await deleteTable('image')
     await deleteTable('instruction')
     await deleteTable('ingredient')
     await deleteTable('recipe')
-    await deleteTable('token')
-    await deleteTable('user')
-    
 }
 
 const deleteTable = async function (tableName) {
@@ -68,6 +66,8 @@ const createRecipeTable = async function () {
         isvegetarian boolean NOT NULL,
         isglutenfree boolean NOT NULL,
         islactosefree boolean NOT NULL
+        userid int NOT NULL,
+        CONSTRAINT fk_recipe_user FOREIGN KEY (userid) REFERENCES user(id)
     )`
     await createTable('recipe', createTableQuery)
 }
@@ -109,7 +109,7 @@ const createImageTable = async function () {
 
 /*---------- USER ACCOUNT TABLES ---------*/
 
-const createUserTable = async function() {
+const createUserTable = async function () {
     const createTableQuery = `CREATE TABLE IF NOT EXISTS user (
         id INT PRIMARY KEY AUTO_INCREMENT,
         username VARCHAR(32) NOT NULL UNIQUE,
@@ -119,7 +119,7 @@ const createUserTable = async function() {
     await createTable('user', createTableQuery)
 }
 
-const createTokenTable = async function() {
+const createTokenTable = async function () {
     const createTableQuery = `CREATE TABLE IF NOT EXISTS token (
         id INT PRIMARY KEY AUTO_INCREMENT,
         access VARCHAR(32) NOT NULL,

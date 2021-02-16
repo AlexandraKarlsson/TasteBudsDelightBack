@@ -219,7 +219,7 @@ tasteBudsRouter.post('/user/login', async (request, response) => {
 
     const match = await bcrypt.compare(ppassword, password);
     if (!match) {
-      throw `Login failed, password '${ppassword}' incorrectfor email '${email}'!`;
+      throw `Login failed, password '${ppassword}' incorrect for email '${email}'!`;
     }
 
     const token = generateAuthToken(id, access);
@@ -269,7 +269,7 @@ tasteBudsRouter.delete('/user/me/token', async (request, response) => {
     response.send({ user });
   } catch (error) {
     console.log(error);
-    response.status(400).send();
+    response.status(400).send('Could not log out user.');
   }
 });
 
