@@ -1,6 +1,6 @@
 const express = require('express')
 const { response, request } = require('express')
-const { createDatabase, deleteDatabase, createTables, deleteTables } = require('../data/utilDb')
+const { createDatabase, deleteDatabase, createTables, deleteTables, setupData } = require('../data/utilDb')
 
 const adminDbRouter = express.Router()
 
@@ -63,6 +63,7 @@ adminDbRouter.get('/setupdb', (request, response) => {
     runDbOperationWithTryCatch(response,'Database setup successfully!', async () => {
         await createDatabase()
         await createTables()
+        await setupData()
     })
 })
 

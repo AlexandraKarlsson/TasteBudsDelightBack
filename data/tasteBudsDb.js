@@ -1,4 +1,6 @@
 const {tasteBudsPoolPromise} = require('./connectionDb')
+const validator = require('validator')
+const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 
 
 const createRecipe = async (recipe) => {
@@ -109,4 +111,40 @@ const getRecipe = async (id) => {
     return {overview,ingredients,instructions,images}
 }
 
-module.exports = {createRecipe, getRecipes, getRecipe}
+const createUser = async (username, password, email) => {
+    if (username.length <= 2) {
+      const error = `Username '${username}' is shorter than 3 characters!`
+      console.log(error)
+      throw error
+    }
+    else if (password.length <= 2) {
+      const error = `Password '${password}' is shorter than 3 characters!`
+      console.log(error)
+      throw error
+    }
+    else if (!validator.isEmail(email)) {
+      const error = `Email ${email} is not a valid email!`
+      console.log(error)
+      throw error
+    } else {
+      try {
+        const passwordHash = await generateHash(password)
+        const userResult = await tasteBudsPoolPromise.query(`INSERT INTO user (username,password,email) VALUES ('${username}','${passwordHash}','${email}')`)
+        if (userResult[0].affectedRows !== 1) {
+          console.log('userResult= ', userResult)
+          throw "Could not insert user!"
+        }
+        const id = userResult[0].insertId
+        console.log('id= ', id)
+  
+        const user = { id, username, email }
+        return user;
+  
+      } catch (error) {
+        console.log(error)
+        throw error
+      }
+    }
+  }
+
+module.exports = {createRecipe, getRecipes, getRecipe, createUser}

@@ -1,7 +1,6 @@
 const express = require('express')
-const validator = require('validator')
 const { response } = require('express')
-const { createRecipe, getRecipes, getRecipe } = require('../data/tasteBudsDb')
+const { createRecipe, getRecipes, getRecipe, createUser } = require('../data/tasteBudsDb')
 
 // USER IMPORTS
 const { tasteBudsPoolPromise } = require('../data/connectionDb')
@@ -62,44 +61,15 @@ tasteBudsRouter.post('/user', async (request, response) => {
   const username = request.body.username; // Must be at least 2 characters
   const password = request.body.password; // Must be at least 4 characters
   const email = request.body.email;
-  const access = "auth";
   console.log('username', username);
   console.log('password', password);
   console.log('email', email);
-  console.log('access', access);
 
-  if (username.length <= 2) {
-    const error = `Username '${username}' is shorter than 3 characters!`;
-    console.log(error);
-    response.status(400).send({ error });
-  }
-  else if (password.length <= 2) {
-    const error = `Password '${password}' is shorter than 3 characters!`;
-    console.log(error);
-    response.status(400).send({ error });
-  }
-  else if (!validator.isEmail(email)) {
-    const error = `Email ${email} is not a valid email!`;
-    console.log(error);
-    response.status(400).send({ error });
-  } else {
-    try {
-      const passwordHash = await generateHash(password);
-      const userResult = await tasteBudsPoolPromise.query(`INSERT INTO user (username,password,email) VALUES ('${username}','${passwordHash}','${email}')`);
-      if (userResult[0].affectedRows !== 1) {
-        console.log('userResult= ', userResult);
-        throw "Could not insert user!";
-      }
-      const id = userResult[0].insertId;
-      console.log('id= ', id);
-
-      const user = { id, username, email };
-      response.status(201).send({ user });
-
-    } catch (error) {
-      console.log(error);
-      response.status(400).send();
-    }
+  try {
+    const user = await createUser(username, password, email)
+    response.status(201).send(user)
+  } catch (error) {
+    response.status(400).send(error)
   }
 });
 
@@ -276,3 +246,5 @@ tasteBudsRouter.delete('/user/me/token', async (request, response) => {
 
 
 module.exports = { tasteBudsRouter }
+
+

@@ -1,4 +1,6 @@
 const { databasePoolPromise, tasteBudsPoolPromise } = require('./connectionDb')
+const { createUser } = require('./tasteBudsDb')
+const {PASSWORD} = require('../security/secret')
 
 const createDatabase = async function () {
     try {
@@ -33,6 +35,7 @@ const createTable = async function (tableName, createTableQuery) {
         console.log(`Table ${tableName} created!`)
     } catch (error) {
         console.log(`Table ${tableName} creation failed!`)
+        console.log(`error = ${error}!`)
     }
 }
 
@@ -65,11 +68,13 @@ const createRecipeTable = async function () {
         isvegan boolean NOT NULL,
         isvegetarian boolean NOT NULL,
         isglutenfree boolean NOT NULL,
-        islactosefree boolean NOT NULL
+        islactosefree boolean NOT NULL,
         userid int NOT NULL,
         CONSTRAINT fk_recipe_user FOREIGN KEY (userid) REFERENCES user(id)
     )`
+
     await createTable('recipe', createTableQuery)
+
 }
 
 const createIngredientTable = async function () {
@@ -130,9 +135,24 @@ const createTokenTable = async function () {
     await createTable('token', createTableQuery)
 }
 
+/*------------ setupData() ------------*/
+
+const setupData = async function () {
+    try {
+        const username = 'admin'
+        const email = 'admin@tastbudsdelight.com'
+
+        const user = await createUser(username, PASSWORD, email)
+        console.log(user)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 module.exports = {
     createDatabase,
     deleteDatabase,
     createTables,
-    deleteTables
+    deleteTables,
+    setupData,
 }
