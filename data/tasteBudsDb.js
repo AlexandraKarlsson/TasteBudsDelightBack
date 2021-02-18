@@ -3,11 +3,13 @@ const validator = require('validator')
 const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 
 
-const createRecipe = async (recipe) => {
+const createRecipe = async (recipe, userId) => {
     console.log('Inside createRecipe...')
 
     // Add row to recipe table
-    const recipeInfo = recipe.overview
+    var recipeInfo = recipe.overview
+    recipeInfo['userId'] = userId;
+    
     console.log(recipeInfo)
     let result = await tasteBudsPoolPromise.query('INSERT INTO recipe SET ?', recipeInfo)
     console.log(result)

@@ -15,16 +15,25 @@ tasteBudsRouter.get('/', (request, response) => {
   response.send('tasteBudsRouter: home ...')
 })
 
-tasteBudsRouter.post('/recipe', async (request, response) => {
+tasteBudsRouter.post('/recipe', authenticate, async (request, response) => {
   console.log('Inside POST /recipe...')
   const body = request.body
+  const token = request.token;
+  const userId = request.user.id;
+
   console.log(body)
-  try {
-    const insertInfo = await createRecipe(body)
-    console.log(insertInfo)
-    response.status(201).send(insertInfo)
-  } catch (error) {
-    response.status(400).send(error)
+  console.log(userId)
+
+  if (token != null) {
+    try {
+      const insertInfo = await createRecipe(body, userId)
+      console.log(insertInfo)
+      response.status(201).send(insertInfo)
+    } catch (error) {
+      response.status(400).send(error)
+    }
+  } else {
+    response.status(400).send('Something went wrong!')
   }
 })
 
