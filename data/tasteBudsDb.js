@@ -60,7 +60,7 @@ const createRecipe = async (recipe, userId) => {
 const getRecipes = async () => {
     console.log('Inside getRecipes')
 
-    const query = 'SELECT * FROM recipe, image WHERE recipe.id=image.recipeid AND image.ordernumber=0'
+    const query = 'SELECT recipe.*, image.*, user.username FROM recipe, image, user WHERE user.id=recipe.userid AND recipe.id=image.recipeid AND image.ordernumber=0'
     const result =  await tasteBudsPoolPromise.query(query)
     console.log(result[0])
     return result[0]
