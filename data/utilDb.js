@@ -70,7 +70,7 @@ const createRecipeTable = async function () {
         isglutenfree boolean NOT NULL,
         islactosefree boolean NOT NULL,
         userid int NOT NULL,
-        CONSTRAINT fk_recipe_user FOREIGN KEY (userid) REFERENCES user(id)
+        CONSTRAINT fk_recipe_user FOREIGN KEY (userid) REFERENCES user(id) ON DELETE CASCADE 
     )`
 
     await createTable('recipe', createTableQuery)
@@ -85,7 +85,7 @@ const createIngredientTable = async function () {
         unit varchar(10) NOT NULL,
         amount int NOT NULL,
         recipeid int NOT NULL,
-        CONSTRAINT fk_ingredient_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id)
+        CONSTRAINT fk_ingredient_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id) ON DELETE CASCADE 
     )`
     await createTable('ingredient', createTableQuery)
 }
@@ -96,7 +96,7 @@ const createInstructionTable = async function () {
         ordernumber int NOT NULL,
         description varchar(1000) NOT NULL,
         recipeid int NOT NULL,
-        CONSTRAINT fk_instruction_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id)
+        CONSTRAINT fk_instruction_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id) ON DELETE CASCADE 
     )`
     await createTable('instruction', createTableQuery)
 }
@@ -107,7 +107,7 @@ const createImageTable = async function () {
         ordernumber int NOT NULL,
         name varchar(100) NOT NULL,
         recipeid int NOT NULL,
-        CONSTRAINT fk_image_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id)
+        CONSTRAINT fk_image_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id) ON DELETE CASCADE 
     )`
     await createTable('image', createTableQuery)
 }
@@ -130,7 +130,7 @@ const createTokenTable = async function () {
         access VARCHAR(32) NOT NULL,
         token VARCHAR(256) NOT NULL,
         userid INT NOT NULL,
-        CONSTRAINT fk_token_user FOREIGN KEY (userId) REFERENCES user(id)
+        CONSTRAINT fk_token_user FOREIGN KEY (userId) REFERENCES user(id) ON DELETE CASCADE 
     )`
     await createTable('token', createTableQuery)
 }

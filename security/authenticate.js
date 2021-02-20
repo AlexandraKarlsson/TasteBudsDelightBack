@@ -11,7 +11,7 @@ const authenticate = async (request,response,next) => {
         let rows = await tasteBudsPoolPromise.query(`SELECT user.id as id,username,email FROM user,token WHERE token='${token}' AND token.userid=user.id`);
         console.log('rows=',rows[0]);
         if(rows[0].length === 0) {
-            throw `User not authenticated'!`; 
+            throw `User not authenticated!`; 
         }
 
         const id        = rows[0][0].id;
