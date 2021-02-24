@@ -248,5 +248,18 @@ const logoutUser = async (token) => {
   }
 }
 
+const changeUsername = async (userId, username) => {
+  try {
+    const result = await tasteBudsPoolPromise.query(`UPDATE user SET username='${username}' WHERE user.id=${userId}`)
+    if(result[0].affectedRows !== 1) {
+      throw `Could not rename username for userid = ${userId}`
+    }
+    return;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
-module.exports = { createRecipe, getRecipes, getRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser }
+
+module.exports = { createRecipe, getRecipes, getRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername }

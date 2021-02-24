@@ -1,6 +1,6 @@
 const express = require('express')
 const { response } = require('express')
-const { createRecipe, getRecipes, getRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser } = require('../data/tasteBudsDb')
+const { createRecipe, getRecipes, getRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername } = require('../data/tasteBudsDb')
 
 // USER IMPORTS
 const { authenticate } = require('../security/authenticate')
@@ -141,6 +141,26 @@ tasteBudsRouter.delete('/user/me/token', authenticate, async (request, response)
   }
 });
 
+tasteBudsRouter.put('/user/username', authenticate, async (request, response) => {
+  console.log('\nRunning UPDATE /user/username');
+  const userId = request.user.id;
+  const username = request.body.username;
+  console.log('userId=', userId);
+  console.log('username=', username);
+
+  try {
+    await changeUsername(userId, username);
+    response.status(204).send();
+  } catch(error) {
+    response.status(400).send(error);
+  }
+});
+
+module.exports = { tasteBudsRouter }
+
+
+
+
 // Prototype for how authenticate middleware should look like
 // tasteBudsRouter.get('/user/me', async (request, response) => {
 //   console.log('\nRunning GET /user/me');
@@ -171,6 +191,5 @@ tasteBudsRouter.delete('/user/me/token', authenticate, async (request, response)
 
 
 
-module.exports = { tasteBudsRouter }
 
 
