@@ -114,6 +114,24 @@ const getRecipe = async (id) => {
   return { overview, ingredients, instructions, images }
 }
 
+const deleteRecipe = async (recipeId, userId) => {
+  try {
+    const recipeResult = await tasteBudsPoolPromise.query(`DELETE FROM recipe WHERE id=${recipeId} AND userid=${userId}`);
+    console.log(recipeResult[0].affectedRows);
+    if (recipeResult[0].affectedRows === 0) {
+      throw "Unable to remove recipe!";
+    } else {
+      const affectedRows = recipeResult[0].affectedRows;
+      return `Recipe with id=${recipeId} deleted!`;
+    }  
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+
 /*------- USER -------*/
 
 // TODO: validation of username, password and email in separate methods
@@ -178,12 +196,6 @@ const getUsers = async () => {
 
 const deleteUser = async (token, id) => {
   try {
-    // const tokenResult = await tasteBudsPoolPromise.query(`DELETE FROM token WHERE token='${token}'`);
-    // console.log(tokenResult[0].affectedRows);
-    // if (tokenResult[0].affectedRows === 0) {
-    //   throw "Unable to remove token!";
-    // }
-
     const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${id}`);
     console.log(userResult[0].affectedRows);
     if (userResult[0].affectedRows === 0) {
@@ -280,4 +292,4 @@ const changeUsername = async (userId, username) => {
 }
 
 
-module.exports = { createRecipe, getRecipes, getRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername }
+module.exports = { createRecipe, getRecipes, getRecipe, deleteRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername }

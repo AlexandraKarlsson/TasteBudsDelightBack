@@ -1,6 +1,6 @@
 const express = require('express')
 const { response } = require('express')
-const { createRecipe, getRecipes, getRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername } = require('../data/tasteBudsDb')
+const { createRecipe, getRecipes, getRecipe, deleteRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername } = require('../data/tasteBudsDb')
 
 // USER IMPORTS
 const { authenticate } = require('../security/authenticate')
@@ -47,13 +47,30 @@ tasteBudsRouter.get('/recipe', async (request, response) => {
 tasteBudsRouter.get('/recipe/:id', async (request, response) => {
   console.log('Inside GET /recipe/:id...')
   const id = request.params.id
-  console.log(id)
+  console.log(`recipeid = ${id}`)
   try {
     const recipe = await getRecipe(id)
     response.send(recipe)
   } catch (error) {
     response.status(400).send(error)
   }
+})
+
+tasteBudsRouter.delete('/recipe/:id', authenticate, async (request, response) => {
+  console.log('Inside DELETE /recipe/:id...')
+  const recipeId = request.params.id
+  const userId = request.user.id;
+  console.log(`recipeid = ${recipeId}`)
+  console.log(`userId = ${userId}`)
+  try {
+    const result = await deleteRecipe(recipeId,userId)
+    console.log(result);
+    response.send(result)
+  } catch (error) {
+    console.log(error);
+    response.status(400).send(error)
+  }
+
 })
 
 
