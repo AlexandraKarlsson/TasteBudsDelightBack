@@ -5,6 +5,8 @@ const { generateHash, generateAuthToken, verifyAuthToken } = require('../securit
 
 
 const createRecipe = async (recipe, userId) => {
+  // TODO: TRY-CATCH missing, and multiple inserts with autocommit
+
   console.log('Inside createRecipe...')
 
   // Add row to recipe table
@@ -80,6 +82,7 @@ const selectAllInTable = async (tableName, columnName, columnValue, sortColumnNa
 }
 
 const getRecipe = async (id) => {
+  //TODO: TRY CATCH missing.
   console.log('Inside getRecipe')
 
   const overviewResult = await selectAllInTable('recipe', 'id', id, null)
@@ -194,7 +197,7 @@ const getUsers = async () => {
   return users;
 }
 
-const deleteUser = async (token, id) => {
+const deleteUser = async (id) => {
   try {
     const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${id}`);
     console.log(userResult[0].affectedRows);
@@ -206,7 +209,7 @@ const deleteUser = async (token, id) => {
     }
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
@@ -273,7 +276,7 @@ const logoutUser = async (token) => {
     return user;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
