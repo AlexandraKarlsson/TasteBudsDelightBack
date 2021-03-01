@@ -244,7 +244,7 @@ const loginUser = async (pemail, ppassword, access) => {
     return result = { user: { id, username, email }, token: token };
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
