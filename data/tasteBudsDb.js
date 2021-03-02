@@ -4,61 +4,93 @@ const bcrypt = require('bcryptjs');
 const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 
 
+// let conn = null;
+// try {
+//     conn = await pool.getConnection();
+//     await conn.beginTransaction();
+//     const [response, meta] = await conn.query("SELECT * FROM tbl_sample");
+//     console.log(response, meta);
+//     await conn.query("INSERT INTO tbl_sample SET data = ?",
+//       ["some_data"]);
+//     await conn.query("INSERT INTO tbl_another_sample SET data = ?",
+//       ["some_data"]);
+//     await conn.commit();
+//   } catch (error) {
+//     if (conn) await conn.rollback();
+//     throw error;
+//   } finally {
+//     if (conn) await conn.release();
+//   }
+
+
 const createRecipe = async (recipe, userId) => {
-  // TODO: TRY-CATCH missing, and multiple inserts with autocommit
 
-  console.log('Inside createRecipe...')
+  console.log('Inside createRecipe SAFE...')
 
-  // Add row to recipe table
-  var recipeInfo = recipe.overview
-  recipeInfo['userId'] = userId;
+  let connection = null;
+  try {
+    connection = await tasteBudsPoolPromise.getConnection();
+    await connection.beginTransaction();
 
-  console.log(recipeInfo)
-  let result = await tasteBudsPoolPromise.query('INSERT INTO recipe SET ?', recipeInfo)
-  console.log(result)
-  const recipeId = result[0].insertId
+    // Add row to recipe table
+    var recipeInfo = recipe.overview
+    recipeInfo['userId'] = userId;
+    console.log(recipeInfo)
 
-  // Add rows to ingredient table
-  recipe.ingredients.forEach(async (ingredient, index) => {
-    // Addera foreign key
-    const ingredientInfo = { ordernumber: index, ...ingredient, 'recipeid': recipeId }
-    console.log(ingredientInfo)
-
-    // Run sql insert
-    const result = await tasteBudsPoolPromise.query('INSERT INTO ingredient SET ?', ingredientInfo)
+    let result = await tasteBudsPoolPromise.query('INSERT INTO recipe SET ?', recipeInfo)
     console.log(result)
-  });
+    const recipeId = result[0].insertId
 
-  // Add row/rows to instruction table
-  const instructionsInfo = []
-  recipe.steps.forEach((instruction, index) => {
-    instructionsInfo.push([index, instruction.description, recipeId])
-  })
-  console.log(instructionsInfo)
+    // Add rows to ingredient table
+    recipe.ingredients.forEach(async (ingredient, index) => {
+      // Addera foreign key
+      const ingredientInfo = { ordernumber: index, ...ingredient, 'recipeid': recipeId }
+      console.log(ingredientInfo)
 
-  let query = 'INSERT INTO instruction (ordernumber,description,recipeid) VALUES ?'
-  result = await tasteBudsPoolPromise.query(query, [instructionsInfo])
-  console.log(result)
+      // Run sql insert
+      const result = await tasteBudsPoolPromise.query('INSERT INTO ingredient SET ?', ingredientInfo)
+      console.log(result)
+    });
 
-  // Add row/rows to image table
-  const imagesInfo = []
-  const imageFileNames = []
-  recipe.images.forEach((image, index) => {
-    const imageName = `${recipeId}_recipeimage_${index}.${image.extention}`
-    imagesInfo.push([index, imageName, recipeId])
-    imageFileNames.push(imageName)
-  })
-  console.log(imagesInfo)
+    // Add row/rows to instruction table
+    const instructionsInfo = []
+    recipe.steps.forEach((instruction, index) => {
+      instructionsInfo.push([index, instruction.description, recipeId])
+    })
+    console.log(instructionsInfo)
 
-  query = 'INSERT INTO image (ordernumber,name,recipeid) VALUES ?'
-  result = await tasteBudsPoolPromise.query(query, [imagesInfo])
-  console.log(result)
+    let query = 'INSERT INTO instruction (ordernumber,description,recipeid) VALUES ?'
+    result = await tasteBudsPoolPromise.query(query, [instructionsInfo])
+    console.log(result)
 
-  return {
-    recipeId: recipeId,
-    imageFileNames: imageFileNames
+    // Add row/rows to image table
+    const imagesInfo = []
+    const imageFileNames = []
+    recipe.images.forEach((image, index) => {
+      const imageName = `${recipeId}_recipeimage_${index}.${image.extention}`
+      imagesInfo.push([index, imageName, recipeId])
+      imageFileNames.push(imageName)
+    })
+    console.log(imagesInfo)
+
+    query = 'INSERT INTO image (ordernumber,name,recipeid) VALUES ?'
+    result = await tasteBudsPoolPromise.query(query, [imagesInfo])
+    console.log(result)
+
+    await connection.commit();
+    return {
+      recipeId: recipeId,
+      imageFileNames: imageFileNames
+    }
+  } catch (error) {
+    if (connection) await connection.rollback();
+    throw error;
+  } finally {
+    if (connection) connection.release();
   }
 }
+
+
 
 const getRecipes = async () => {
   console.log('Inside getRecipes')
@@ -126,7 +158,7 @@ const deleteRecipe = async (recipeId, userId) => {
     } else {
       const affectedRows = recipeResult[0].affectedRows;
       return `Recipe with id=${recipeId} deleted!`;
-    }  
+    }
   } catch (error) {
     throw error;
   }
