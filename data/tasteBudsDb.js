@@ -3,26 +3,6 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs');
 const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 
-
-// let conn = null;
-// try {
-//     conn = await pool.getConnection();
-//     await conn.beginTransaction();
-//     const [response, meta] = await conn.query("SELECT * FROM tbl_sample");
-//     console.log(response, meta);
-//     await conn.query("INSERT INTO tbl_sample SET data = ?",
-//       ["some_data"]);
-//     await conn.query("INSERT INTO tbl_another_sample SET data = ?",
-//       ["some_data"]);
-//     await conn.commit();
-//   } catch (error) {
-//     if (conn) await conn.rollback();
-//     throw error;
-//   } finally {
-//     if (conn) await conn.release();
-//   }
-
-
 const createRecipe = async (recipe, userId) => {
 
   console.log('Inside createRecipe SAFE...')
@@ -91,7 +71,6 @@ const createRecipe = async (recipe, userId) => {
 }
 
 
-
 const getRecipes = async () => {
   console.log('Inside getRecipes')
 
@@ -114,7 +93,6 @@ const selectAllInTable = async (tableName, columnName, columnValue, sortColumnNa
 }
 
 const getRecipe = async (id) => {
-  //TODO: TRY CATCH missing.
   console.log('Inside getRecipe')
 
   const overviewResult = await selectAllInTable('recipe', 'id', id, null)
@@ -156,7 +134,6 @@ const deleteRecipe = async (recipeId, userId) => {
     if (recipeResult[0].affectedRows === 0) {
       throw "Unable to remove recipe!";
     } else {
-      const affectedRows = recipeResult[0].affectedRows;
       return `Recipe with id=${recipeId} deleted!`;
     }
   } catch (error) {
@@ -169,7 +146,7 @@ const deleteRecipe = async (recipeId, userId) => {
 
 /*------- USER -------*/
 
-// TODO: validation of username, password and email in separate methods
+// TODO: validation, move to a separate file? 
 
 const validateEmail = (email) => {
   if (!validator.isEmail(email)) {
@@ -236,7 +213,6 @@ const deleteUser = async (id) => {
     if (userResult[0].affectedRows === 0) {
       throw "Unable to remove user!";
     } else {
-      const affectedRows = userResult[0].affectedRows;
       return `User with id=${id} deleted!`;
     }
   } catch (error) {
@@ -319,7 +295,7 @@ const changeUsername = async (userId, username) => {
     if (result[0].affectedRows !== 1) {
       throw `Could not rename username for userid = ${userId}`
     }
-    return;
+    return `Username successfully changed!`;
   } catch (error) {
     console.log(error);
     throw error;

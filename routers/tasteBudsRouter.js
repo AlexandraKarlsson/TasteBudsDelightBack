@@ -164,8 +164,8 @@ tasteBudsRouter.put('/user/username', authenticate, async (request, response) =>
   console.log('username=', username);
 
   try {
-    await changeUsername(userId, username);
-    response.status(204).send();
+    const result = await changeUsername(userId, username);
+    response.status(204).send(result);
   } catch(error) {
     response.status(400).send(error);
   }
