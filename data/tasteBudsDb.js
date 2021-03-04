@@ -295,12 +295,60 @@ const changeUsername = async (userId, username) => {
     if (result[0].affectedRows !== 1) {
       throw `Could not rename username for userid = ${userId}`
     }
-    return `Username successfully changed!`;
+    return "Username successfully changed!";
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
+const changePassword = async (userId, oldPassword, newPassword, newRePassword) => {
+  try {
+    // validate oldpassword
+    validatePassword(oldPassword);
 
-module.exports = { createRecipe, getRecipes, getRecipe, deleteRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername }
+    // Check that the oldPassword match
+    let result = await tasteBudsPoolPromise.query(`SELECT password FROM user WHERE id=${userId}`);
+    const oldPasswordHash = result[0][0].password;
+    const match = await bcrypt.compare(oldPassword, oldPasswordHash);
+    if (!match) {
+      throw "Old password incorrect!";
+    }
+
+    // Check newPassword newRePassword is the same and different than the old
+    if (newPassword !== newRePassword) {
+      throw "New password do not match!"
+    }
+
+    // validate newPassword
+    validatePassword(newPassword);
+
+    // Create hash of password
+    const newPasswordHash = await generateHash(newPassword);
+
+    // Insert hashed password into tabel user
+    result = await tasteBudsPoolPromise.query(`UPDATE user SET password='${newPasswordHash}' WHERE id=${userId}`);
+    if (result[0].affectedRows !== 1) {
+      throw "Could not change password!"
+    }
+    // TODO: Should we also logout user?
+    return "Password successfully changed!"
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+module.exports = {
+  createRecipe,
+  getRecipes,
+  getRecipe,
+  deleteRecipe,
+  createUser,
+  getUsers,
+  deleteUser,
+  loginUser,
+  logoutUser,
+  changeUsername,
+  changePassword
+}
