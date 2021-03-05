@@ -206,15 +206,14 @@ const getUsers = async () => {
   return users;
 }
 
-const deleteUser = async (id) => {
+const deleteUser = async (userId) => {
   try {
-    const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${id}`);
+    const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${userId}`);
     console.log(userResult[0].affectedRows);
     if (userResult[0].affectedRows === 0) {
-      throw "Unable to remove user!";
-    } else {
-      return `User with id=${id} deleted!`;
+      throw "Could not delete user or user not found!";
     }
+    return "User successfully deleted!";
   } catch (error) {
     console.log(error);
     throw error;
@@ -350,5 +349,5 @@ module.exports = {
   loginUser,
   logoutUser,
   changeUsername,
-  changePassword
+  changePassword,
 }

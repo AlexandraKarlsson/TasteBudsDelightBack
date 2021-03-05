@@ -109,11 +109,11 @@ tasteBudsRouter.get('/user', async (request, response) => {
 
 tasteBudsRouter.delete('/user', authenticate, async (request, response) => {
   console.log('\nRunning DELETE /user');
-  const id = request.user.id;
-  console.log(`id = ${id}`);
+  const userId = request.user.id;
+  console.log(`userId = ${userId}`);
 
   try {
-    const result = await deleteUser(id);
+    const result = await deleteUser(userId);
     console.log(result);
     response.send(result);
   } catch (error) {
