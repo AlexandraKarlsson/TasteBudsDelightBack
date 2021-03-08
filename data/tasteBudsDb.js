@@ -206,14 +206,22 @@ const getUsers = async () => {
   return users;
 }
 
-const deleteUser = async (userId) => {
+const deleteUser = async (userId, password) => {
   try {
-    const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${userId}`);
-    console.log(userResult[0].affectedRows);
-    if (userResult[0].affectedRows === 0) {
-      throw "Could not delete user or user not found!";
+    const user = await tasteBudsPoolPromise.query(`SELECT * FROM user WHERE id=${userId}`);
+    const userPassword = user[0][0].password;
+    console.log(`password in database = ${userPassword}`)
+    const match = await bcrypt.compare(password, userPassword);
+    if (!match) {
+      throw "The password is not valid!";
+    } else {
+      const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${userId}`);
+      console.log(`AffectedRows = ${userResult[0].affectedRows}`);
+      if (userResult[0].affectedRows === 0) {
+        throw "Could not delete user or user could not be found!";
+      }
+      return "User successfully deleted!";
     }
-    return "User successfully deleted!";
   } catch (error) {
     console.log(error);
     throw error;

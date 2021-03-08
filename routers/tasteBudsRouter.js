@@ -107,13 +107,15 @@ tasteBudsRouter.get('/user', async (request, response) => {
   }
 });
 
-tasteBudsRouter.delete('/user', authenticate, async (request, response) => {
-  console.log('\nRunning DELETE /user');
+tasteBudsRouter.delete('/user/:password', authenticate, async (request, response) => {
+  console.log('\nRunning DELETE /user/:password');
   const userId = request.user.id;
+  const password = request.params.password;
   console.log(`userId = ${userId}`);
+  console.log(`password = ${password}`);
 
   try {
-    const result = await deleteUser(userId);
+    const result = await deleteUser(userId, password);
     console.log(result);
     response.send(result);
   } catch (error) {
