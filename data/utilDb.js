@@ -40,12 +40,12 @@ const createTable = async function (tableName, createTableQuery) {
 }
 
 const deleteTables = async function () {
-    await deleteTable('token')
-    await deleteTable('user')
     await deleteTable('image')
     await deleteTable('instruction')
     await deleteTable('ingredient')
     await deleteTable('recipe')
+    await deleteTable('token')
+    await deleteTable('user')
 }
 
 const deleteTable = async function (tableName) {
