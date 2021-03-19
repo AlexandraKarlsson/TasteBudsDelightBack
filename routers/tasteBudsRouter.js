@@ -1,6 +1,6 @@
 const express = require('express')
-const { response } = require('express')
-const { createRecipe, getRecipes, getRecipe, deleteRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername, changePassword } = require('../data/tasteBudsDb')
+const { response, request } = require('express')
+const { createRecipe, updateRecipe, getRecipes, getRecipe, deleteRecipe, createUser, getUsers, deleteUser, loginUser, logoutUser, changeUsername, changePassword } = require('../data/tasteBudsDb')
 
 // USER IMPORTS
 const { authenticate } = require('../security/authenticate')
@@ -34,6 +34,20 @@ tasteBudsRouter.post('/recipe', authenticate, async (request, response) => {
   }
 })
 
+tasteBudsRouter.put('/recipe', authenticate, async (request, response) => {
+  console.log('Inside PUT /recipe...')
+  const recipe = request.body;
+  console.log(recipe)
+
+  try {
+    const updateInfo = await updateRecipe(recipe)
+    console.log(updateInfo)
+    response.send(updateInfo)
+  } catch (error) {
+    response.status(400).send(error)
+  }
+})
+
 tasteBudsRouter.get('/recipe', async (request, response) => {
   console.log('Inside GET /recipe...')
   try {
@@ -63,7 +77,7 @@ tasteBudsRouter.delete('/recipe/:id', authenticate, async (request, response) =>
   console.log(`recipeid = ${recipeId}`)
   console.log(`userId = ${userId}`)
   try {
-    const result = await deleteRecipe(recipeId,userId)
+    const result = await deleteRecipe(recipeId, userId)
     console.log(result);
     response.send(result)
   } catch (error) {
@@ -151,7 +165,7 @@ tasteBudsRouter.delete('/user/me/token', authenticate, async (request, response)
   console.log('token=', token);
 
   try {
-    const user = await logoutUser(token); 
+    const user = await logoutUser(token);
     response.send({ user });
   } catch (error) {
     response.status(400).send('Could not log out user.');
@@ -168,8 +182,8 @@ tasteBudsRouter.put('/user/username', authenticate, async (request, response) =>
 
   try {
     const result = await changeUsername(userId, username);
-    response.status(204).send({result});
-  } catch(error) {
+    response.status(204).send({ result });
+  } catch (error) {
     response.status(400).send(error);
   }
 });
@@ -188,8 +202,8 @@ tasteBudsRouter.put('/user/password', authenticate, async (request, response) =>
 
   try {
     const result = await changePassword(userId, oldPassword, newPassword, newRePassword);
-    response.status(204).send({result});
-  } catch(error) {
+    response.status(204).send({ result });
+  } catch (error) {
     response.status(400).send(error);
   }
 });

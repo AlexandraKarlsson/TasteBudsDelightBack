@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 
 const createRecipe = async (recipe, userId) => {
-
   console.log('Inside createRecipe SAFE...')
 
   let connection = null;
@@ -61,6 +60,87 @@ const createRecipe = async (recipe, userId) => {
     return {
       recipeId: recipeId,
       imageFileNames: imageFileNames
+    }
+  } catch (error) {
+    if (connection) await connection.rollback();
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
+}
+
+
+
+const updateRecipe = async (recipe) => {
+  console.log('Inside updateRecipe...')
+
+  let connection = null;
+  try {
+    connection = await tasteBudsPoolPromise.getConnection();
+    await connection.beginTransaction();
+
+    // UPDATE RECIPE TABLE
+    let result = await tasteBudsPoolPromise.query(`UPDATE recipe SET ? WHERE id=${recipe.id}`, recipe.overview)
+    console.log(result)
+    // TODO: need to check affected rows on result?
+
+
+    // UPDATE INGREDIENT TABLE
+    // Delete all ingredients
+    result = await tasteBudsPoolPromise.query(`DELETE FROM ingredient WHERE recipeid=${recipe.id}`)
+    console.log("Delete ingredient result")
+    console.log(result)
+    // TODO: need to check affected rows on result?
+    recipe.ingredients.forEach(async (ingredient, index) => {
+      // Addera foreign key
+      const ingredientInfo = { ordernumber: index, ...ingredient, 'recipeid': recipe.id }
+      console.log(ingredientInfo)
+
+      // Run sql insert
+      const result = await tasteBudsPoolPromise.query('INSERT INTO ingredient SET ?', ingredientInfo)
+      console.log("Insert ingredient result")
+      console.log(result)
+      // TODO: need to check affected rows on result?
+    });
+
+
+    // UPDATE INSTRUCTION TABLE
+    // Delete all instruction
+    result = await tasteBudsPoolPromise.query(`DELETE FROM instruction WHERE recipeid=${recipe.id}`)
+    console.log("Delete instruction result")
+    // TODO: need to check affected rows on result?
+    const instructionsInfo = []
+    recipe.steps.forEach((instruction, index) => {
+      instructionsInfo.push([index, instruction.description, recipe.id])
+    })
+    console.log(instructionsInfo)
+
+    let query = 'INSERT INTO instruction (ordernumber,description,recipeid) VALUES ?'
+    result = await tasteBudsPoolPromise.query(query, [instructionsInfo])
+    console.log("Insert instruction result")
+    console.log(result)
+    // TODO: need to check affected rows on result?
+
+
+
+    // UPDATE IMAGE TABLE
+    // const imagesInfo = []
+    // const imageFileNames = []
+    // recipe.images.forEach((image, index) => {
+    //   const imageName = `${recipeId}_recipeimage_${index}.${image.extention}`
+    //   imagesInfo.push([index, imageName, recipeId])
+    //   imageFileNames.push(imageName)
+    // })
+    // console.log(imagesInfo)
+
+    // query = 'INSERT INTO image (ordernumber,name,recipeid) VALUES ?'
+    // result = await tasteBudsPoolPromise.query(query, [imagesInfo])
+    // console.log(result)
+
+    await connection.commit();
+    return {
+      recipeId: recipe.id,
+      // imageFileNames: imageFileNames
     }
   } catch (error) {
     if (connection) await connection.rollback();
@@ -348,6 +428,7 @@ const changePassword = async (userId, oldPassword, newPassword, newRePassword) =
 
 module.exports = {
   createRecipe,
+  updateRecipe,
   getRecipes,
   getRecipe,
   deleteRecipe,
