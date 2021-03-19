@@ -26,6 +26,7 @@ const createTables = async function () {
     await createRecipeTable()
     await createIngredientTable()
     await createInstructionTable()
+    await createImageCountTable()
     await createImageTable()
 }
 
@@ -41,6 +42,7 @@ const createTable = async function (tableName, createTableQuery) {
 
 const deleteTables = async function () {
     await deleteTable('image')
+    await deleteTable('imagecount')
     await deleteTable('instruction')
     await deleteTable('ingredient')
     await deleteTable('recipe')
@@ -111,6 +113,16 @@ const createImageTable = async function () {
     )`
     await createTable('image', createTableQuery)
 }
+
+const createImageCountTable = async function () {
+    const createTableQuery = `CREATE TABLE IF NOT EXISTS imagecount (
+        highest INT NOT NULL,
+        recipeid INT NOT NULL,
+        CONSTRAINT fk_imagecount_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id) ON DELETE CASCADE 
+    )`
+    await createTable('imagecount', createTableQuery)
+}
+
 
 /*---------- USER ACCOUNT TABLES ---------*/
 
