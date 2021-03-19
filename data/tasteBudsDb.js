@@ -56,6 +56,10 @@ const createRecipe = async (recipe, userId) => {
     result = await tasteBudsPoolPromise.query(query, [imagesInfo])
     console.log(result)
 
+    const imageCount = recipe.images.length-1
+    result = await tasteBudsPoolPromise.query(`INSERT INTO imagecount (highest, recipeid) VALUES (${imageCount}, ${recipeId})`)
+    console.log(result)
+
     await connection.commit();
     return {
       recipeId: recipeId,
