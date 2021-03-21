@@ -56,7 +56,7 @@ const createRecipe = async (recipe, userId) => {
     result = await tasteBudsPoolPromise.query(query, [imagesInfo])
     console.log(result)
 
-    const imageCount = recipe.images.length-1
+    const imageCount = recipe.images.length - 1
     result = await tasteBudsPoolPromise.query(`INSERT INTO imagecount (highest, recipeid) VALUES (${imageCount}, ${recipeId})`)
     console.log(result)
 
@@ -128,25 +128,52 @@ const updateRecipe = async (recipe) => {
 
 
     // UPDATE IMAGE TABLE
-    // const imagesInfo = []
-    // const imageFileNames = []
-    // recipe.images.forEach((image, index) => {
-    //   const imageName = `${recipeId}_recipeimage_${index}.${image.extention}`
-    //   imagesInfo.push([index, imageName, recipeId])
-    //   imageFileNames.push(imageName)
-    // })
-    // console.log(imagesInfo)
+    result = await tasteBudsPoolPromise.query(`SELECT * FROM imagecount WHERE recipeid=${recipe.id}`)
+    console.log(result[0])
+    let highestNumber = result[0][0].highest
+    console.log(`highestNumber = ${highestNumber}`)
+    let imageFileNames = []
+    let orderNumber = 0
 
-    // query = 'INSERT INTO image (ordernumber,name,recipeid) VALUES ?'
-    // result = await tasteBudsPoolPromise.query(query, [imagesInfo])
-    // console.log(result)
+    for(let index=0; index < recipe.images.length; index++) {
+      let image = recipe.images[index]
+      if (image.operation === 'delete') {
+        console.log('delete')
+        result = await tasteBudsPoolPromise.query(`DELETE FROM image WHERE name = '${image.filename}'`)
+        console.log(result[0])
+        // Check affectedrows
+
+      } else if (image.operation === 'create') {
+        console.log('create')
+        highestNumber += 1
+        let name = `${recipe.id}_recipeimage_${highestNumber}.${image.extention}`
+        let queryString = `INSERT INTO image (ordernumber,name,recipeid) VALUES (${orderNumber},'${name}',${recipe.id})`
+        result = await tasteBudsPoolPromise.query(queryString)
+        console.log(result[0])
+        // Check affectedrows
+        imageFileNames.push(name)
+        orderNumber += 1
+      } else if (image.operation === 'exist') {
+        console.log('exist')
+        result = await tasteBudsPoolPromise.query(`UPDATE image SET ordernumber=${orderNumber} WHERE name='${image.filename}'`)
+        console.log(result[0])
+        // Check affectedrows
+
+        orderNumber += 1;
+      }
+    }
+    console.log(`highestNumber = ${highestNumber}`)
+    result = await tasteBudsPoolPromise.query(`UPDATE imagecount SET highest=${highestNumber} WHERE recipeid=${recipe.id}`)
+    console.log(result[0])
+    // Check affectedrows
 
     await connection.commit();
     return {
       recipeId: recipe.id,
-      // imageFileNames: imageFileNames
+      imageFileNames: imageFileNames
     }
   } catch (error) {
+    console.log(error)
     if (connection) await connection.rollback();
     throw error;
   } finally {
