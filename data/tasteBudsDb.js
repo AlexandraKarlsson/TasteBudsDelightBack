@@ -185,7 +185,7 @@ const updateRecipe = async (recipe) => {
 const getRecipes = async () => {
   console.log('Inside getRecipes')
 
-  const query = 'SELECT recipe.*, image.*, user.username FROM recipe, image, user WHERE user.id=recipe.userid AND recipe.id=image.recipeid AND image.ordernumber=0'
+  const query = 'SELECT recipe.*, image.name, user.username FROM recipe, image, user WHERE user.id=recipe.userid AND recipe.id=image.recipeid AND image.ordernumber=0'
   const result = await tasteBudsPoolPromise.query(query)
   console.log(result[0])
   return result[0]
@@ -326,12 +326,18 @@ const deleteUser = async (userId, password) => {
     if (!match) {
       throw "The password is not valid!";
     } else {
+
+      const query = `SELECT name FROM image, recipe WHERE recipe.userid=${userId} AND image.recipeid=recipe.id`;
+      const imageNameResult = await tasteBudsPoolPromise.query(query);
+      console.log(imageNameResult[0]);
+      const imageNameList = imageNameResult[0];
+
       const userResult = await tasteBudsPoolPromise.query(`DELETE FROM user WHERE id=${userId}`);
       console.log(`AffectedRows = ${userResult[0].affectedRows}`);
       if (userResult[0].affectedRows === 0) {
         throw "Could not delete user or user could not be found!";
       }
-      return "User successfully deleted!";
+      return imageNameList;
     }
   } catch (error) {
     console.log(error);
