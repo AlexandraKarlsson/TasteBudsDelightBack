@@ -86,6 +86,7 @@ const createIngredientTable = async function () {
         name varchar(50) NOT NULL,
         unit varchar(10) NOT NULL,
         amount int NOT NULL,
+        amountfraction varchar(5) NOT NULL,
         recipeid int NOT NULL,
         CONSTRAINT fk_ingredient_recipe FOREIGN KEY (recipeid) REFERENCES recipe(id) ON DELETE CASCADE 
     )`

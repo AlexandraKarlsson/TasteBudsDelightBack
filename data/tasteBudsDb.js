@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { generateHash, generateAuthToken, verifyAuthToken } = require('../security/security')
 
 const createRecipe = async (recipe, userId) => {
-  console.log('Inside createRecipe SAFE...')
+  console.log('Inside createRecipe...')
 
   let connection = null;
   try {
@@ -253,9 +253,9 @@ const deleteRecipe = async (recipeId, userId) => {
 }
 
 
-
-
-/*------- USER -------*/
+//=============================
+// USER 
+//=============================
 
 // TODO: validation, move to a separate file? 
 
@@ -337,7 +337,7 @@ const deleteUser = async (userId, password) => {
       if (userResult[0].affectedRows === 0) {
         throw "Could not delete user or user could not be found!";
       }
-      return imageNameList;
+      return {imageNameList};
     }
   } catch (error) {
     console.log(error);
